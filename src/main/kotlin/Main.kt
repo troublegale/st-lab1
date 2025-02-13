@@ -1,5 +1,5 @@
 package itmo.tg
 
 fun main() {
-    println("Hello World!")
+    println("Nothing to see here!")
 }
