@@ -44,7 +44,7 @@ class Woman : IntelligentBeing {
         }
     }
     fun bringMessage(message: String?): String {
-        return if (message == null) "I have nothing to say."
+        return if (message.isNullOrBlank()) "I have nothing to say."
         else "I bring a very important message: $message"
     }
 }

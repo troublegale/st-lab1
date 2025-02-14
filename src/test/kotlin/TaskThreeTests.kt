@@ -12,6 +12,8 @@ class TaskThreeTests {
     fun `When she has nothing to say, she says so`() {
         val she = Woman()
         assertEquals("I have nothing to say.", she.bringMessage(null))
+        assertEquals("I have nothing to say.", she.bringMessage(""))
+        assertEquals("I have nothing to say.", she.bringMessage("    "))
     }
 
     @Test

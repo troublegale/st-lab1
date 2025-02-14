@@ -10,7 +10,7 @@ class DFS {
         if (graph.isEmpty()) throw IllegalArgumentException(
             "Graph is empty")
         if (v !in graph.keys) throw IllegalArgumentException(
-            "Graph doesn't a vertex #$v")
+            "Graph doesn't have a vertex #$v")
         moves.add("visited $v")
         visited.add(v)
         for (u in graph.getValue(v)) {
