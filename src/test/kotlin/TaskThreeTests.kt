@@ -51,20 +51,27 @@ class TaskThreeTests {
 
     @ParameterizedTest
     @MethodSource("testMessages")
-    fun `They could have heard her`(message: String) {
+    fun `They could have heard her`(
+        message: String?, information: String
+    ) {
         val she = Woman()
         val observers = getObservers()
         observers.forEach { o -> o.hear(she.bringMessage(message)) }
-        assert(observers.all { o -> o.speak().equals(
-            "I bring a very important message: $message") })
+        assert(observers.all { o -> o.speak().equals(information) })
     }
 
     companion object {
         @JvmStatic
         fun testMessages() = listOf(
-            Arguments.of("Amogus!"),
-            Arguments.of("I am smart!"),
-            Arguments.of("Make America Great Again!")
+            Arguments.of(null, "I have nothing to say."),
+            Arguments.of("  ", "I have nothing to say."),
+            Arguments.of("Amogus!",
+                "I bring a very important message: Amogus!"),
+            Arguments.of("I am smart!",
+                "I bring a very important message: I am smart!"),
+            Arguments.of("Make America Great Again!",
+                "I bring a very important message: " +
+                        "Make America Great Again!")
         )
     }
 
