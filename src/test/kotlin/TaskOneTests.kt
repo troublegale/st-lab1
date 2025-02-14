@@ -54,7 +54,8 @@ class TaskOneTests {
     }
 
     companion object {
-        @JvmStatic fun factorials() = listOf(
+        @JvmStatic
+        fun factorials() = listOf(
             Arguments.of(1, 1),
             Arguments.of(2, 2),
             Arguments.of(3, 6),
@@ -63,7 +64,8 @@ class TaskOneTests {
             Arguments.of(6, 720)
         )
 
-        @JvmStatic fun arcCosineArguments() = listOf(
+        @JvmStatic
+        fun arcCosineArguments() = listOf(
             Arguments.of(0.1, acos(0.1)),
             Arguments.of(-0.1, acos(-0.1)),
             Arguments.of(-0.5, 2 * PI / 3),
