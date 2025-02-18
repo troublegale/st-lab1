@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 const val PI = 3.141592653589793
+const val INACCURACY = 0.0001
 
 class TaskOneTests {
 
@@ -44,8 +45,6 @@ class TaskOneTests {
         assertEquals(PI / 2, arcCosineDecomposition(0.0, 16))
     }
 
-    private val inaccuracy = 0.0001
-
     @ParameterizedTest
     @MethodSource("arcCosineArguments")
     fun `Arc cosine inaccuracy should be less than 10 to the -4th`(
@@ -53,7 +52,7 @@ class TaskOneTests {
     ) {
         var difference = arcCosineDecomposition(input, 8) - expected
         difference = if (difference > 0) difference else -difference
-        assert(difference < inaccuracy)
+        assert(difference < INACCURACY)
     }
 
     companion object {
