@@ -1,78 +1,131 @@
 package itmo.tg
 
+import kotlin.reflect.KClass
+
 /*
 Возможно, ее сообщение привлекло бы больше внимания, если бы было известно,
 что люди были третьими по уровню интеллекта существами на планете Земля,
 а не (как полагало большинство независимых обозревателей) вторыми.
  */
 
-enum class Intelligence {
-    NOT_SO_SMART, SMART, THE_SMARTEST
+class Message(
+    private val content: String? = null,
+    var attentionLevel: Int = 0
+) {
+
+    fun getContent(): String {
+        if (content.isNullOrBlank()) return "Nothing to say."
+        return content
+    }
+
+    fun calculateAndSetAttentionLevel(reviewers: List<Reviewer>) {
+        val observerBeliefs = reviewers.map { it.review(HumanBeing()) }
+        var totalAttention = 0
+        observerBeliefs.forEach {
+            totalAttention += when (it) {
+                IntelligenceLevel.FIRST -> 5
+                IntelligenceLevel.SECOND -> 10
+                IntelligenceLevel.THIRD -> 20
+            }
+        }
+        attentionLevel = totalAttention
+    }
+
 }
 
-interface IntelligentBeing {
+enum class IntelligenceLevel {
+    FIRST, SECOND, THIRD
+}
+
+interface Being {
+    fun getIntelligenceLevel(): IntelligenceLevel
+}
+
+class HumanBeing(private val message: Message? = null) : Being {
+
+    fun getMessage(): Message {
+        if (message == null) return Message("*silence*")
+        return message
+    }
+
+    private val intelligence: IntelligenceLevel = IntelligenceLevel.THIRD
+
+    override fun getIntelligenceLevel(): IntelligenceLevel {
+        return intelligence
+    }
+
+}
+
+class Cat : Being {
+
+    private val intelligence: IntelligenceLevel = IntelligenceLevel.SECOND
+
+    override fun getIntelligenceLevel(): IntelligenceLevel {
+        return intelligence
+    }
+
+}
+
+class CelestialBeing : Being {
+
+    private val intelligence: IntelligenceLevel = IntelligenceLevel.FIRST
+
+    override fun getIntelligenceLevel(): IntelligenceLevel {
+        return intelligence
+    }
+
+}
+
+class Reviewer(private val beliefs: Map<KClass<out Being>, IntelligenceLevel>) {
+
+    fun review(being: Being): IntelligenceLevel {
+        return beliefs[being::class]!!
+    }
+
     companion object {
-        var information: String? = null
-    }
-    fun observe(being: IntelligentBeing): Intelligence
-    fun hear(message: String) {
-        information = message
-    }
-    fun speak() = information
-}
+        private val defaultReviewer = Reviewer(
+            mapOf(
+                Pair(Cat::class, IntelligenceLevel.THIRD),
+                Pair(HumanBeing::class, IntelligenceLevel.SECOND),
+                Pair(CelestialBeing::class, IntelligenceLevel.FIRST)
+            )
+        )
 
-class Man : IntelligentBeing {
-    override fun observe(being: IntelligentBeing): Intelligence {
-        return when (being) {
-            is Man -> Intelligence.SMART
-            is Woman -> Intelligence.NOT_SO_SMART
-            is God -> Intelligence.THE_SMARTEST
-            else -> throw IllegalArgumentException(
-                "Can only observe men, women and gods")
+        private val enlightenedReviewer = Reviewer(
+            mapOf(
+                Pair(HumanBeing::class, IntelligenceLevel.THIRD),
+                Pair(Cat::class, IntelligenceLevel.SECOND),
+                Pair(CelestialBeing::class, IntelligenceLevel.FIRST)
+            )
+        )
+
+        private val crazyReviewer = Reviewer(
+            mapOf(
+                Pair(Cat::class, IntelligenceLevel.THIRD),
+                Pair(CelestialBeing::class, IntelligenceLevel.SECOND),
+                Pair(HumanBeing::class, IntelligenceLevel.FIRST)
+            )
+        )
+
+        fun getIndependentReviewers(): List<Reviewer> {
+            return listOf(
+                defaultReviewer,
+                defaultReviewer,
+                defaultReviewer,
+                enlightenedReviewer,
+                crazyReviewer
+            )
+        }
+
+        fun getTheoreticalReviewers(): List<Reviewer> {
+            return listOf(
+                defaultReviewer,
+                enlightenedReviewer,
+                enlightenedReviewer,
+                enlightenedReviewer,
+                crazyReviewer
+            )
         }
     }
-}
 
-class Woman : IntelligentBeing {
-    override fun observe(being: IntelligentBeing): Intelligence {
-        return when (being) {
-            is Man -> Intelligence.NOT_SO_SMART
-            is Woman -> Intelligence.SMART
-            is God -> Intelligence.THE_SMARTEST
-            else -> throw IllegalArgumentException(
-                "Can only observe men, women and gods")
-        }
-    }
-    fun bringMessage(message: String?): String {
-        return if (message.isNullOrBlank()) "I have nothing to say."
-        else "I bring a very important message: $message"
-    }
-}
-
-class God : IntelligentBeing {
-    override fun observe(being: IntelligentBeing): Intelligence {
-        return when (being) {
-            is Man -> Intelligence.NOT_SO_SMART
-            is Woman -> Intelligence.NOT_SO_SMART
-            is God -> Intelligence.SMART
-            else -> throw IllegalArgumentException(
-                "Can only observe men, women and gods")
-        }
-    }
-}
-
-class Monkey : IntelligentBeing {
-    override fun observe(being: IntelligentBeing): Intelligence {
-        return when (being) {
-            is Man -> Intelligence.NOT_SO_SMART
-            is Woman -> Intelligence.NOT_SO_SMART
-            is God -> Intelligence.NOT_SO_SMART
-            else -> Intelligence.THE_SMARTEST
-        }
-    }
-}
-
-fun getObservers(): List<IntelligentBeing> {
-    return listOf(Man(), Man(), Man(),
-        Woman(), Woman(), God(), Monkey())
 }

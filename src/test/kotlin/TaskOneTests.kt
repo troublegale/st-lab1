@@ -6,7 +6,8 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.math.*
+
+const val PI = 3.141592653589793
 
 class TaskOneTests {
 
@@ -43,14 +44,16 @@ class TaskOneTests {
         assertEquals(PI / 2, arcCosineDecomposition(0.0, 16))
     }
 
-    private val inaccuracy = 10.0.pow(-4)
+    private val inaccuracy = 0.0001
 
     @ParameterizedTest
     @MethodSource("arcCosineArguments")
     fun `Arc cosine inaccuracy should be less than 10 to the -4th`(
         input: Double, expected: Double
     ) {
-        assert(abs(arcCosineDecomposition(input, 8) - expected) < inaccuracy)
+        var difference = arcCosineDecomposition(input, 8) - expected
+        difference = if (difference > 0) difference else -difference
+        assert(difference < inaccuracy)
     }
 
     companion object {
@@ -64,16 +67,23 @@ class TaskOneTests {
             Arguments.of(6, 720)
         )
 
+        private const val ACOS_0_1  = 1.4706289056333368 // acos(0.1)
+        private const val ACOS_N_0_1 = 1.6709637479564565 // acos(-0.1)
+        private const val ACOS_0_6 = 0.9272952180016123 // acos(0.6)
+        private const val ACOS_N_0_6 = 2.214297435588181 // acos(-0.6)
+        private const val SQRT_2 = 1.4142135623730951 // sqrt(2)
+        private const val SQRT_3 = 1.7320508075688772 // sqrt(3)
+
         @JvmStatic
         fun arcCosineArguments() = listOf(
-            Arguments.of(0.1, acos(0.1)),
-            Arguments.of(-0.1, acos(-0.1)),
+            Arguments.of(0.1, ACOS_0_1),
+            Arguments.of(-0.1, ACOS_N_0_1),
             Arguments.of(-0.5, 2 * PI / 3),
             Arguments.of(0.5, PI / 3),
-            Arguments.of((sqrt(3.0) - 1) / (2 * sqrt(2.0)), 5 * PI / 12),
-            Arguments.of(-(sqrt(3.0) - 1) / (2 * sqrt(2.0)), 7 * PI / 12),
-            Arguments.of(0.6, acos(0.6)),
-            Arguments.of(-0.6, acos(-0.6))
+            Arguments.of((SQRT_3 - 1) / (2 * SQRT_2), 5 * PI / 12),
+            Arguments.of(-(SQRT_3 - 1) / (2 * SQRT_2), 7 * PI / 12),
+            Arguments.of(0.6, ACOS_0_6),
+            Arguments.of(-0.6, ACOS_N_0_6)
         )
     }
 

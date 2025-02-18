@@ -12,7 +12,6 @@ repositories {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation(kotlin("test"))
 }
 
 tasks.test {

@@ -1,78 +1,63 @@
-import itmo.tg.*
+import itmo.tg.HumanBeing
+import itmo.tg.IntelligenceLevel
+import itmo.tg.Message
+import itmo.tg.Reviewer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
 
 class TaskThreeTests {
 
     @Test
-    fun `When she has nothing to say, she says so`() {
-        val she = Woman()
-        assertEquals("I have nothing to say.", she.bringMessage(null))
-        assertEquals("I have nothing to say.", she.bringMessage(""))
-        assertEquals("I have nothing to say.", she.bringMessage("    "))
+    fun `Empty message has nothing to say`() {
+        val nts = "Nothing to say."
+        assertEquals(Message().getContent(), nts)
+        assertEquals(Message("").getContent(), nts)
+        assertEquals(Message("   ").getContent(), nts)
     }
 
     @Test
-    fun `When she has something to say, she says it`() {
-        val she = Woman()
-        assertEquals("I bring a very important message: Amogus!",
-            she.bringMessage("Amogus!"))
+    fun `Human with no message is silent`() {
+        assertEquals(HumanBeing().getMessage().getContent(),
+            "*silence*")
     }
 
     @Test
-    fun `She is smarter than men`() {
-        val she = Woman()
-        val someMan = Man()
-        assertEquals(Intelligence.SMART, she.observe(she))
-        assertEquals(Intelligence.NOT_SO_SMART, she.observe(someMan))
+    fun `Unreviewed message has attention level of 0`() {
+        assertEquals(Message("Something").attentionLevel, 0)
     }
 
     @Test
-    fun `Most observers think that men are the second smartest beings`() {
-        val observers = getObservers()
-        val she = Woman()
-        val herScore = observers.stream().filter {
-            o -> o.observe(she) == Intelligence.SMART }.count()
-        val someMan = Man()
-        val someMansScore = observers.stream().filter {
-            o -> o.observe(someMan) == Intelligence.SMART }.count()
-        assert(herScore < someMansScore)
+    fun `Reviewed message receives attention`() {
+        val message = Message("Information")
+        val reviewers = Reviewer.getIndependentReviewers()
+        message.calculateAndSetAttentionLevel(reviewers)
+        assert(message.attentionLevel > 0)
     }
 
     @Test
-    fun `Observers only observe men, women and gods`() {
-        val man = Man()
-        assertThrows<IllegalArgumentException> { man.observe(Monkey()) }
+    fun `Humans are third in intelligence`() {
+        assertEquals(HumanBeing().getIntelligenceLevel(), IntelligenceLevel.THIRD)
     }
 
-    @ParameterizedTest
-    @MethodSource("testMessages")
-    fun `They could have heard her`(
-        message: String?, information: String
-    ) {
-        val she = Woman()
-        val observers = getObservers()
-        observers.forEach { o -> o.hear(she.bringMessage(message)) }
-        assert(observers.all { o -> o.speak().equals(information) })
+    @Test
+    fun `Most independent Reviewers consider Humans second in intelligence`() {
+        val independentReviewers = Reviewer.getIndependentReviewers()
+        val suitableReviewers = independentReviewers.filter {
+            it.review(HumanBeing()) == IntelligenceLevel.SECOND
+        }
+        assert(suitableReviewers.size > independentReviewers.size)
     }
 
-    companion object {
-        @JvmStatic
-        fun testMessages() = listOf(
-            Arguments.of(null, "I have nothing to say."),
-            Arguments.of("  ", "I have nothing to say."),
-            Arguments.of("Amogus!",
-                "I bring a very important message: Amogus!"),
-            Arguments.of("I am smart!",
-                "I bring a very important message: I am smart!"),
-            Arguments.of("Make America Great Again!",
-                "I bring a very important message: " +
-                        "Make America Great Again!")
-        )
+    @Test
+    fun `Her message could have received more attention`() {
+        val she = HumanBeing(Message("Make America Great Again"))
+        val independentReviewers = Reviewer.getIndependentReviewers()
+        val theoreticalReviewers = Reviewer.getTheoreticalReviewers()
+        she.getMessage().calculateAndSetAttentionLevel(independentReviewers)
+        val attentionLevel1 = she.getMessage().attentionLevel
+        she.getMessage().calculateAndSetAttentionLevel(theoreticalReviewers)
+        val attentionLevel2 = she.getMessage().attentionLevel
+        assert(attentionLevel1 > attentionLevel2)
     }
 
 }
