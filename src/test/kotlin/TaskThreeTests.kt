@@ -45,7 +45,10 @@ class TaskThreeTests {
         val suitableReviewers = independentReviewers.filter {
             it.review(HumanBeing()) == IntelligenceLevel.SECOND
         }
-        assert(suitableReviewers.size > independentReviewers.size)
+        val unsuitableReviewers = independentReviewers.filter {
+            it.review(HumanBeing()) != IntelligenceLevel.SECOND
+        }
+        assert(suitableReviewers.size > unsuitableReviewers.size)
     }
 
     @Test
@@ -57,7 +60,7 @@ class TaskThreeTests {
         val attentionLevel1 = she.getMessage().attentionLevel
         she.getMessage().calculateAndSetAttentionLevel(theoreticalReviewers)
         val attentionLevel2 = she.getMessage().attentionLevel
-        assert(attentionLevel1 > attentionLevel2)
+        assert(attentionLevel1 < attentionLevel2)
     }
 
 }

@@ -19,7 +19,9 @@ class Message(
     }
 
     fun calculateAndSetAttentionLevel(reviewers: List<Reviewer>) {
-        val observerBeliefs = reviewers.map { it.review(HumanBeing()) }
+        val observerBeliefs = reviewers.map {
+            it.review(HumanBeing())
+        }
         var totalAttention = 0
         observerBeliefs.forEach {
             totalAttention += when (it) {
@@ -42,41 +44,39 @@ interface Being {
 }
 
 class HumanBeing(private val message: Message? = null) : Being {
-
     fun getMessage(): Message {
         if (message == null) return Message("*silence*")
         return message
     }
 
-    private val intelligence: IntelligenceLevel = IntelligenceLevel.THIRD
+    private val intelligence: IntelligenceLevel =
+        IntelligenceLevel.THIRD
 
     override fun getIntelligenceLevel(): IntelligenceLevel {
         return intelligence
     }
-
 }
 
 class Cat : Being {
-
-    private val intelligence: IntelligenceLevel = IntelligenceLevel.SECOND
+    private val intelligence: IntelligenceLevel =
+        IntelligenceLevel.SECOND
 
     override fun getIntelligenceLevel(): IntelligenceLevel {
         return intelligence
     }
-
 }
 
 class CelestialBeing : Being {
-
-    private val intelligence: IntelligenceLevel = IntelligenceLevel.FIRST
+    private val intelligence: IntelligenceLevel =
+        IntelligenceLevel.FIRST
 
     override fun getIntelligenceLevel(): IntelligenceLevel {
         return intelligence
     }
-
 }
 
-class Reviewer(private val beliefs: Map<KClass<out Being>, IntelligenceLevel>) {
+class Reviewer(private val beliefs:
+               Map<KClass<out Being>, IntelligenceLevel>) {
 
     fun review(being: Being): IntelligenceLevel {
         return beliefs[being::class]!!
@@ -102,7 +102,8 @@ class Reviewer(private val beliefs: Map<KClass<out Being>, IntelligenceLevel>) {
         private val crazyReviewer = Reviewer(
             mapOf(
                 Pair(Cat::class, IntelligenceLevel.THIRD),
-                Pair(CelestialBeing::class, IntelligenceLevel.SECOND),
+                Pair(CelestialBeing::class,
+                    IntelligenceLevel.SECOND),
                 Pair(HumanBeing::class, IntelligenceLevel.FIRST)
             )
         )
